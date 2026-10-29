@@ -8,6 +8,7 @@ import Lobby from './screens/Lobby'
 import Game from './screens/Game'
 import Results from './screens/Results'
 import Erro from './screens/Erro'
+import SoundEffects from './components/SoundEffects'
 
 const TELAS = {
   home: Home,
@@ -42,6 +43,7 @@ export default function App() {
 
   return (
     <RoomContext.Provider value={room}>
+      <SoundEffects />
       {connectionIssue && screen !== 'home' && (
         <div className="connection-banner" role="status">
           {connectionIssue}

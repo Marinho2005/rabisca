@@ -18,10 +18,8 @@ export default function Erro() {
           !
         </div>
         <h1>Não foi possível entrar</h1>
-        <p className="lead">{erro}</p>
-        {pendingCode && (
-          <p className="room-chip small-chip">Sala {pendingCode}</p>
-        )}
+        <p className="muted">{erro}</p>
+        {pendingCode && <p className="room-chip small-chip">Sala {pendingCode}</p>}
 
         <div className="error-actions">
           {!configuracao && (

@@ -24,11 +24,11 @@ export default function Chat({
   }
 
   return (
-    <section className="chat-panel">
-      <div className="section-title chat-title">
-        <h2>Chat</h2>
+    <section className="panel guesses-panel">
+      <div className="panel-title-row">
+        <div className="panel-title">Palpites</div>
         <span className="muted small">
-          {status === 'playing' ? 'Palpites valem pontos' : 'Aguarde a rodada'}
+          {status === 'playing' ? 'vale pontos' : 'aguarde a rodada'}
         </span>
       </div>
 
@@ -42,7 +42,7 @@ export default function Chat({
         {mensagens.map((mensagem) => {
           if (mensagem.tipo === 'sistema') {
             return (
-              <div className="chat-message system" key={mensagem.id}>
+              <div className="guess guess-system" key={mensagem.id}>
                 {mensagem.texto}
               </div>
             )
@@ -50,39 +50,54 @@ export default function Chat({
 
           if (mensagem.tipo === 'acerto') {
             return (
-              <div className="chat-message correct" key={mensagem.id}>
-                <strong>{mensagem.texto}</strong>
+              <div className="guess ok" key={mensagem.id}>
+                {mensagem.texto}
               </div>
             )
           }
 
           return (
-            <div className="chat-message guess" key={mensagem.id}>
-              <span className="chat-author">{mensagem.autor || 'Jogador'}:</span>{' '}
-              {mensagem.texto}
+            <div className="guess" key={mensagem.id}>
+              <b>{mensagem.autor || 'Jogador'}:</b> {mensagem.texto}
             </div>
           )
         })}
       </div>
 
-      <form className="chat-form" onSubmit={enviar}>
+      <form className="guess-form" onSubmit={enviar}>
+        <label className="sr-only" htmlFor="palpite">
+          Seu palpite
+        </label>
         <input
+          id="palpite"
           type="text"
           value={texto}
           onChange={(evento) => setTexto(evento.target.value.slice(0, 120))}
           placeholder={
-            podePalpitar ? 'Digite seu palpite...' : motivoBloqueio || 'Aguarde...'
+            podePalpitar ? 'Seu palpite...' : motivoBloqueio || 'Aguarde...'
           }
-          aria-label="Seu palpite"
           disabled={!podePalpitar}
           autoComplete="off"
         />
         <button
           type="submit"
-          className="button primary"
+          className="send-button"
+          aria-label="Enviar palpite"
           disabled={!podePalpitar || textoVazio(texto)}
         >
-          Enviar
+          <svg
+            aria-hidden="true"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M4 12 H20 M13 5 L20 12 L13 19" />
+          </svg>
         </button>
       </form>
     </section>

@@ -21,7 +21,6 @@ export default function Canvas({
   espessura = 4,
   borracha = false,
   onLote,
-  onLimpar,
 }) {
   const canvasRef = useRef(null)
   const tamanhoRef = useRef({ largura: 1, altura: 1, dpr: 1 })
@@ -390,15 +389,6 @@ export default function Canvas({
       {ativo && (
         <div className="canvas-active-hint">Você está desenhando</div>
       )}
-      <button
-        type="button"
-        className="canvas-clear"
-        onClick={onLimpar}
-        disabled={!ativo}
-        title="Limpar desenho"
-      >
-        Limpar
-      </button>
     </div>
   )
 }

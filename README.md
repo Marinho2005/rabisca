@@ -9,9 +9,10 @@
 [![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-Realtime-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![Zustand](https://img.shields.io/badge/State-Zustand-764abc?style=for-the-badge)](https://zustand-demo.pmnd.rs/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel)](https://rabisca-three.vercel.app)
 [![License MIT](https://img.shields.io/badge/License-MIT-amber?style=for-the-badge)](LICENSE)
 
-[Visualizar Demonstração](#-como-jogar) • [Como Rodar](#-como-rodar-localmente) • [Arquitetura](#-arquitetura) • [Deploy](#-deploy-rápido)
+🎮 **[JOGAR AGORA ONLINE](https://rabisca-three.vercel.app)** • [Como Rodar](#-como-rodar-localmente) • [Arquitetura](#-arquitetura) • [Deploy](#-deploy-rápido)
 
 </div>
 

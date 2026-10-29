@@ -1,176 +1,152 @@
-# Rabisca
+<div align="center">
 
-Jogo de desenho e adivinhação em tempo real, inspirado no Gartic. É 100% frontend: não há backend próprio, banco de dados nem tabelas. A sincronização usa apenas **Supabase Realtime** com **Broadcast + Presence**.
+# 🎨 Rabisca
 
-## Stack
+**Jogo multiplayer de desenho e adivinhação em tempo real estilo Gartic / Skribbl.io**  
+*100% Frontend • Zero Backend • Sem Tabelas • Supabase Realtime*
 
-- Vite + React (JavaScript)
-- `@supabase/supabase-js`
-- Zustand para o estado global
-- CSS puro, responsivo
-- Sem Next.js, Redux ou roteador. A sala atual fica em `?sala=CODIGO` via `URLSearchParams`.
+[![React 19](https://img.shields.io/badge/React-19-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-Realtime-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Zustand](https://img.shields.io/badge/State-Zustand-764abc?style=for-the-badge)](https://zustand-demo.pmnd.rs/)
+[![License MIT](https://img.shields.io/badge/License-MIT-amber?style=for-the-badge)](LICENSE)
 
-## Como rodar
+[Visualizar Demonstração](#-como-jogar) • [Como Rodar](#-como-rodar-localmente) • [Arquitetura](#-arquitetura) • [Deploy](#-deploy-rápido)
 
-Pré-requisitos: Node.js 20+ e um projeto no Supabase.
+</div>
 
-```bash
-npm install
-cp .env.example .env
-npm run dev
-```
+---
 
-Abra o endereço mostrado pelo Vite. Para testar com mais jogadores, abra outras abas ou use outro dispositivo/rede.
+## ✨ Destaques
 
-### Variáveis de ambiente
+- 🖌️ **Canvas Sincronizado**: Suporte total a **Pointer Events** (mouse, touch no celular e caneta stylus), coordenadas normalizadas `[0..1]` para telas de qualquer tamanho, envio em lotes de ~50ms, paleta de cores, espessuras e borracha.
+- ⚡ **Zero Tabelas / Sem Banco**: Funciona inteiramente sobre canais efêmeros do Supabase Realtime (**Presence** para descoberta de jogadores e **Broadcast** para sincronização de traços e palpites).
+- 👑 **Host Autônomo com Failover**: O jogador mais antigo na sala (`menor entrouEm`) orquestra o sorteio da palavra, tempo e validação de palpites. Se o host desconectar, o próximo jogador assume a liderança automaticamente sem derrubar o jogo!
+- 🔒 **Palavra Secreta Direcionada**: A palavra sorteada é transmitida exclusivamente ao desenhista via broadcast direcionado. Os adivinhadores recebem apenas a máscara de dicas (`_ _ _ _`).
+- 💬 **Chat & Validação Inteligente**: Normalização NFD Unicode para aceitar palpites sem distinguir maiúsculas, minúsculas, acentos ou pontuações (ex: `guarda-chuva` = `guarda chuva`). Acertos corretos não revelam a palavra no chat!
+- ⏱️ **Pontuação Dinâmica**: Acertos mais rápidos garantem mais pontos no placar, e o desenhista também pontua a cada acerto da sala.
+- 📱 **100% Responsivo**: Interface limpa, moderna e pensada tanto para desktop quanto para celulares.
+- 🔗 **Link de Convite Direto**: Salas com códigos seguros de 6 caracteres (`crypto.getRandomValues`) e links compartilháveis via URL (`?sala=CODIGO`).
 
-Crie um arquivo `.env` na raiz:
+---
 
-```env
-VITE_SUPABASE_URL=https://seu-projeto.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_sua_chave_aqui
-```
+## 🚀 Como Rodar Localmente
 
-Use a chave **publishable** (`sb_publishable_...`) do Supabase. Nunca coloque a `secret key` ou a `service_role` no frontend: tudo que começa com `VITE_` é embutido no bundle e fica público.
+### Pré-requisitos
+- **Node.js 20+** e **npm**
+- Projeto gratuito no [Supabase](https://supabase.com) (não é necessário criar nenhuma tabela, apenas ter o projeto ativo)
 
-O Realtime já vem habilitado por padrão no Supabase. Não é necessário criar tabelas, buckets, funções ou políticas RLS. O app usa somente canais efêmeros `room:CODIGO`.
+### Passo a Passo
 
-## Scripts
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/Marinho2005/rabisca.git
+   cd rabisca
+   ```
 
-```bash
-npm run dev      # ambiente de desenvolvimento
-npm run build    # build de produção em dist/
-npm run preview  # prévia do build
-npm run lint     # oxlint
-```
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
 
-## Como jogar
+3. **Configure as variáveis de ambiente:**
+   Copie o arquivo de exemplo:
+   ```bash
+   cp .env.example .env
+   ```
+   No `.env`, adicione suas credenciais públicas do Supabase (*Project Settings > API*):
+   ```env
+   VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_sua_chave_aqui
+   ```
+   > ⚠️ **Atenção:** Use sempre a chave **pública/anon/publishable**. Jamais use a `service_role` ou chave secreta no frontend.
 
-1. Crie uma sala ou entre com um código de 6 caracteres.
-2. Escolha um apelido (máximo de 16 caracteres). Apelidos repetidos recebem sufixo: `Ana`, `Ana2`.
-3. O host inicia a partida com pelo menos 2 jogadores.
-4. Cada jogador desenha uma vez por volta. O host pode configurar de 1 a 3 voltas e 60/75/90 segundos por rodada.
-5. Quem acerta mais cedo ganha mais pontos. O desenhista também pontua por cada acerto.
-6. Ao final, o host pode reiniciar a partida, voltando ao lobby.
+4. **Inicie o servidor de desenvolvimento:**
+   ```bash
+   npm run dev
+   ```
+   Abra no seu navegador: [http://localhost:5173](http://localhost:5173).
 
-## Funcionalidades
+---
 
-- Código de sala gerado com `crypto.getRandomValues`, sem caracteres ambíguos.
-- Link compartilhável (`?sala=CODIGO`).
-- Presence em tempo real, limite de 8 jogadores, host automático pelo menor `entrouEm` e failover se o host sair.
-- Sala trancada durante a partida. Reconexões de jogadores que já participavam são aceitas.
-- Desenho com Pointer Events (mouse, toque e caneta), cores, espessura, borracha e limpar.
-- Traços normalizados de 0 a 1 e enviados em lotes (~50 ms), não a cada pixel.
-- Histórico de traços para quem reconecta no meio da rodada.
-- Palpites comparados sem maiúsculas e sem acentos (`normalize('NFD')`).
-- A palavra só é enviada ao desenhista por Broadcast direcionado; os demais veem apenas os traços da dica.
-- Snapshot do estado enviado pelo host em mudanças importantes e a cada segundo, permitindo sincronização e failover.
-- Reconexão automática do canal com aviso visual.
-- Limpeza de canal e listeners ao sair.
+## 🎮 Como Jogar
 
-## Arquitetura
+1. **Criar ou Entrar**: Crie uma sala nova ou digite o código de 6 caracteres compartilhado por um amigo.
+2. **Escolha seu Apelido**: Escolha seu nome de jogador (máximo de 16 caracteres). Se houver nomes iguais, o jogo adiciona sufixos automáticos (ex: `Victor`, `Victor2`).
+3. **Lobby**: O host aguarda os jogadores entrarem (mínimo de 2, máximo de 8) e pode ajustar a duração da rodada (60s, 75s ou 90s) e número de voltas.
+4. **Partida**:
+   - Cada jogador assume a vez de desenhar uma vez por rodada.
+   - O desenhista usa as ferramentas de lápis, cores e borracha.
+   - Os adivinhadores tentam adivinhar no chat.
+   - Quem acerta primeiro ganha a pontuação máxima da rodada!
+5. **Pódio & Jogar Novamente**: Ao final de todas as voltas, o ranking coroa o grande vencedor e o host pode reiniciar a sala com um clique.
 
-```text
-┌──────────────────────────────┐
-│ Navegador do host            │
-│                              │
-│ Zustand  ───────────────┐    │
-│ useRoom (canal, Presence,│    │
-│ host, Broadcast)         │    │
-│ Canvas + telas           │    │
-└──────────────┬───────────┘    │
-               │ Broadcast + Presence
-               ▼
-┌──────────────────────────────────────────┐
-│ Supabase Realtime                        │
-│ canal: room:ABC234                       │
-│                                          │
-│ Presence: { id, nome, entrouEm }         │
-│ Broadcast: estado, palavra, palpite,     │
-│ chat, traco, limpar, historico, config   │
-│                                          │
-│ Nenhuma tabela, nenhum backend próprio   │
-└──────────────┬───────────────────────────┘
-               │
-     ┌─────────┴──────────┬───────────────┐
-     ▼                    ▼               ▼
-┌──────────────┐   ┌──────────────┐  ┌──────────────┐
-│ Navegador B  │   │ Navegador C  │  │ Navegador D  │
-│ cliente normal│  │ cliente normal│  │ cliente normal│
-└──────────────┘   └──────────────┘  └──────────────┘
-```
+---
 
-### Autoridade do host
+## 🛠️ Tecnologias Utilizadas
 
-O host é o cliente com o menor `entrouEm` na Presence. Ele é a autoridade da partida:
+| Tecnologia | Finalidade |
+| :--- | :--- |
+| **React 19** | Biblioteca para construção da interface de usuário reativa |
+| **Vite 6** | Bundler ultra-rápido para desenvolvimento e build de produção |
+| **@supabase/supabase-js** | Conexão WebSockets em tempo real via Presence & Broadcast |
+| **Zustand 5** | Gerenciamento de estado global leve e sem boilerplate |
+| **Oxlint** | Linter ultrarrápido em Rust para garantia de qualidade de código |
+| **Pure CSS** | Design responsivo, mobile-first e estilizado sem frameworks pesados |
 
-- sorteia a palavra;
-- envia a palavra apenas ao desenhista;
-- controla a ordem dos desenhistas, o temporizador e a transição de rodadas;
-- recebe palpites, compara as respostas, calcula pontos e distribui o resultado;
-- publica snapshots com rodada, desenhista, placar, tempo restante e status.
+---
 
-Os demais clientes apenas renderizam o estado recebido e enviam palpites/traços. Se o host sair, o próximo jogador assume automaticamente e continua a partir do último snapshot. O novo host tenta recuperar a palavra atual diretamente com o desenhista.
+## 🏛️ Arquitetura
 
-### Estrutura
+O **Rabisca** funciona em uma topologia *Host-Authority sobre Mesh Efêmero*, utilizando o Supabase Realtime como relay:
 
 ```text
-src/
-  screens/      Home, Nickname, Lobby, Game, Results, Erro
-  components/   Canvas, PlayerList, Chat, Timer
-  hooks/        useRoom (canal, presence, host, broadcast)
-  lib/          supabase, roomCode, words, normalize, game, playerId
-  store/        useStore (Zustand)
-  App.jsx
-  main.jsx
+               ┌──────────────────────────────────────┐
+               │         Supabase Realtime            │
+               │        (Canal: room:CODIGO)          │
+               │                                      │
+               │   • Presence: { id, nome, entrouEm } │
+               │   • Broadcast: traço, palpite, chat, │
+               │     palavra (direcionada), snapshots │
+               └──────────────────┬───────────────────┘
+                                  │
+         ┌────────────────────────┼────────────────────────┐
+         ▼                        ▼                        ▼
+┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
+│  Host (Player A)│      │ Client (Player B)│     │ Client (Player C)│
+│  ────────────── │      │ ─────────────── │      │ ─────────────── │
+│ • Sorteia palavra      │ • Renderiza tela│      │ • Renderiza tela│
+│ • Valida palpites      │ • Envia palpites│      │ • Envia palpites│
+│ • Controla timer│      │ • Envia traços  │      │ • Envia traços  │
+│ • Transmite snapshot   │   (quando desenha)     │   (quando desenha)
+└─────────────────┘      └─────────────────┘      └─────────────────┘
 ```
 
-## Deploy
+---
 
-O build é estático. Configure as duas variáveis de ambiente no painel do provedor antes do build, pois o Vite as incorpora ao bundle.
+## 📦 Deploy Rápido
+
+O projeto compila em assets 100% estáticos (`dist/`), podendo ser hospedado gratuitamente em qualquer provedor:
 
 ### Vercel
+1. Conecte seu repositório no dashboard da Vercel.
+2. Preset de Framework: **Vite**.
+3. Adicione as variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`.
+4. Deploy imediato!
 
-1. Importe o repositório.
-2. Framework preset: **Vite**.
-3. Build command: `npm run build`.
-4. Output directory: `dist`.
-5. Adicione `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` em Environment Variables.
+### Cloudflare Pages / Netlify
+- **Build command:** `npm run build`
+- **Output directory:** `dist`
+- Configure as variáveis de ambiente no painel do serviço.
 
-### Netlify
+---
 
-1. Importe o repositório.
-2. Build command: `npm run build`.
-3. Publish directory: `dist`.
-4. Adicione as duas variáveis em Site settings → Environment variables.
+## 📄 Licença
 
-### Cloudflare Pages
+Este projeto está sob a licença [MIT](LICENSE). Sinta-se livre para jogar, modificar e contribuir!
 
-1. Conecte o repositório.
-2. Framework preset: **Vite**.
-3. Build command: `npm run build`.
-4. Build output directory: `dist`.
-5. Adicione as variáveis em Settings → Environment variables.
+---
 
-Não há rotas de servidor: a sala é um query parameter (`/?sala=ABC234`), então não é necessário configurar rewrites de SPA.
-
-## Limitações conhecidas
-
-Este projeto foi feito para jogar com amigos, não para ser à prova de trapaça.
-
-- **Canais públicos:** qualquer pessoa com o código da sala pode entrar se houver vaga. Não há autenticação, senha ou moderação.
-- **Host como autoridade:** o host roda a lógica no navegador. Um cliente malicioso pode enviar mensagens falsas de estado, palpite ou traço; a integridade depende de os clientes seguirem o protocolo.
-- **A palavra trafega no canal:** ela é enviada apenas ao desenhista via Broadcast direcionado, mas o payload pode ser lido no DevTools por um jogador avançado. Broadcast não é criptografia nem controle de acesso.
-- **Sem persistência:** não existem tabelas. Se todos saírem, a sala deixa de existir; chat, desenho e placar não são recuperados depois que o host encerra.
-- **Failover limitado:** o novo host usa o último snapshot. Se a palavra atual não puder ser recuperada do desenhista (por exemplo, os dois caíram), a rodada pode ser encerrada sem a palavra correta.
-- **Histórico em memória:** o histórico de traços fica no host. Um host que recarrega a página pode não recuperar o desenho em andamento.
-- **Timers no navegador:** o temporizador roda no host. Suspender a aba ou perder a conexão no meio da rodada pode atrasar o relógio até a reconexão.
-- **Rate limits no cliente:** os limites de envio de palpites e traços reduzem spam, mas podem ser burlados por quem controla o cliente.
-- **Remoção de jogador:** o host envia uma mensagem de expulsão; o cliente removido obedece. Não há banimento no servidor.
-- **Sem antifraude/antiplágio:** respostas iguais, colas por chamada de voz e inspeção do tráfego não são detectadas.
-
-## Segurança
-
-- O frontend usa somente a chave publishable, que é feita para ser pública.
-- Jamais use `service_role` ou secret key no `.env` do Vite.
-- O `.env` está no `.gitignore`; apenas `.env.example` deve ser versionado.
+<div align="center">
+  Desenvolvido com 💛 por <a href="https://github.com/Marinho2005">Victor Marinho</a>
+</div>
